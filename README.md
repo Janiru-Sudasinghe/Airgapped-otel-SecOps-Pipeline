@@ -66,7 +66,7 @@ This maps out the complete lifecycle of the telemetry, from the moment a securit
 
 <p align="center">
   <br>
-  <img src="./docs/diagrams/architecture.png" width="600" alt="Network Topology Diagram">
+  <img src="./Docs/diagram.png" width="1000" alt="Network Topology Diagram">
 </p>
 
 ---
@@ -631,17 +631,15 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 3. `collector.log` tail showing OTLP export to `192.168.98.130:4317`.
 4. Event Viewer showing the test events.
 
-**In the Bindplane console (🌐):**
-5. Agents page — both collectors **Connected**.
-6. Windows pipeline — `Windows Events → Bindplane Gateway` with live throughput.
-7. Gateway pipeline — `Bindplane Gateway → Google SecOps` with throughput.
-8. Google SecOps destination panel (Customer ID/credentials **blurred**).
+**In the Bindplane console (🌐):** 
+1. Agents page - both collectors **Connected**. 
+2. Windows pipeline - `Windows Events → Bindplane Gateway` with live throughput. 
+3. Gateway pipeline - `Bindplane Gateway → Google SecOps` with throughput. 
+4. Google SecOps destination panel (Customer ID/credentials **blurred**).
 
-**In Google SecOps (☁️):**
-9. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events.
-10. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.
-
-> ⚠️ Blur the **Customer ID**, **project number**, and any tokens before committing screenshots.
+**In Google SecOps (☁️):** 
+1. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events
+2. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.<br>
 
 ---
 
