@@ -223,7 +223,7 @@ dnf download --resolve --alldeps --destdir=postgres postgresql15-server postgres
 cd ~/airgap && find . -type f \( -name '*.rpm' -o -name '*.tar.gz' -o -name '*.zip' \) -exec sha256sum {} \; > SHA256SUMS.txt 
 ```
 
-🪟 **staging-Windows** — download the agent MSI:
+🪟 **staging-Windows** - download the agent MSI: (PowerShell)
 
 ```
 # Force PowerShell to use TLS 1.2 for secure web connections, preventing connection errors with modern web servers
@@ -242,42 +242,86 @@ Invoke-WebRequest -Uri "https://bdot.bindplane.com/v1.100.0/observiq-otel-collec
 
 ---
 
-### Phase 2 — CentOS Bindplane Server (Offline)
+### Phase 2 - CentOS Bindplane Server (Offline)
 
-🔵 **offline-CentOS-server** — base system, firewall, time:
+🔵 **offline-CentOS-server** - base system, firewall, time:
 
-```bash
+```
+# Set the system timezone to Sri Lanka time (Asia/Colombo)
 sudo timedatectl set-timezone Asia/Colombo
+```
+```
+# Display the current system date and time to verify the timezone change was successful
+date
+```
+```
+# Set the machine's hostname to 'bindplane.local'
 sudo hostnamectl set-hostname bindplane.local
-
+```
+```
+# Open TCP port 3001 permanently in the firewall (default port for the BindPlane OP user interface and API)
 sudo firewall-cmd --permanent --add-port=3001/tcp
+```
+```
+# Open TCP port 4317 permanently (default port for the OpenTelemetry collector receiving OTLP over gRPC)
 sudo firewall-cmd --permanent --add-port=4317/tcp
+```
+```
+# Open TCP port 4318 permanently (default port for the OpenTelemetry collector receiving OTLP over HTTP)
 sudo firewall-cmd --permanent --add-port=4318/tcp
+```
+```
+# Open TCP port 5432 permanently (default port for PostgreSQL database connections)
 sudo firewall-cmd --permanent --add-port=5432/tcp
+```
+```
+# Reload the firewall to apply the newly added port rules, then immediately list all open ports to verify them
 sudo firewall-cmd --reload && sudo firewall-cmd --list-ports
-
+```
+```
+# Enable the Chrony NTP (Network Time Protocol) service to start automatically on boot, and start it right now
+sudo systemctl enable --now chronyd
+```
+```
+# Enable the Chrony NTP service to start on boot, start it immediately, and check its synchronization status
 sudo systemctl enable --now chronyd && chronyc tracking
 ```
 
 **Install PostgreSQL 15 (offline):**
 
-```bash
-cd ~/airgap/postgres
+```
+# Navigate into the directory containing the downloaded PostgreSQL RPM files
+cd postgres/
+```
+```
+# Install all PostgreSQL packages locally from the downloaded RPM files without requiring an internet connection
 sudo dnf localinstall -y *.rpm
+```
+```
+# Initialize the PostgreSQL database cluster, which creates the base files and system tables required to run the database
 sudo /usr/pgsql-15/bin/postgresql-15-setup initdb
+```
+```
+# Enable the PostgreSQL 15 service to start automatically on system boot, and start it immediately
 sudo systemctl enable --now postgresql-15
+```
+```
+# Check the current status of the PostgreSQL service to confirm it is actively running without errors
 systemctl status postgresql-15
 ```
 
-**Create the database and user** (use a strong password — do **not** reuse the username):
+**Create the database and user** (use a strong password - do **not** reuse the username):
 
-```bash
+```
+# Run a block of SQL commands as the default 'postgres' superuser to create the BindPlane database and user
 sudo -u postgres psql <<'SQL'
-CREATE USER bindplane_user WITH PASSWORD '<DB_PASSWORD>';
+CREATE USER bindplane_user WITH PASSWORD 'bindplane_user';
 CREATE DATABASE bindplane OWNER bindplane_user;
 GRANT ALL PRIVILEGES ON DATABASE bindplane TO bindplane_user;
 SQL
-
+```
+```
+# Connect directly to the newly created 'bindplane' database to grant the user permissions over the public schema
 sudo -u postgres psql -d bindplane <<'SQL'
 GRANT ALL ON SCHEMA public TO bindplane_user;
 ALTER DATABASE bindplane OWNER TO bindplane_user;
@@ -294,16 +338,27 @@ host    bindplane    bindplane_user  192.168.98.0/24     scram-sha-256
 
 If PostgreSQL must listen beyond localhost, in `/var/lib/pgsql/15/data/postgresql.conf` set `listen_addresses = '*'`. Then:
 
-```bash
+```
+# Restart the PostgreSQL 15 service to apply any recent configuration changes and ensure the database is running smoothly
 sudo systemctl restart postgresql-15
-psql -h 127.0.0.1 -U bindplane_user -d bindplane -c "SELECT version();"   # connectivity test
+```
+```
+# Verify the database connection by connecting via local TCP/IP (127.0.0.1) as 'bindplane_user' to the 'bindplane' database, and execute a simple query to check the version
+psql -h 127.0.0.1 -U bindplane_user -d bindplane -c "SELECT version();"
 ```
 
 **Install & initialize Bindplane:**
 
-```bash
+```
+# Copy the downloaded BindPlane Enterprise RPM file from your offline bundle into the temporary directory for installation
 cp ~/airgap/bindplane/bindplane-ee_* /tmp/
+```
+```
+# Install the BindPlane application package locally using the copied RPM file, without requiring an internet connection
 sudo dnf localinstall -y /tmp/bindplane-ee_*.rpm
+```
+```
+# Initialize the BindPlane server configuration, setting the environment variable for the data directory and specifying the path for the newly generated configuration file
 sudo BINDPLANE_CONFIG_HOME=/var/lib/bindplane /usr/local/bin/bindplane init server --config /etc/bindplane/config.yaml
 ```
 
@@ -333,20 +388,43 @@ auth:
   password: <CONSOLE_PASSWORD>
   secretKey: <OPAMP_SECRET_KEY>     # UUID used to enroll collectors
 ```
-
-```bash
+```
+# Enable the BindPlane service to start automatically on system boot, and start it immediately
 sudo systemctl enable --now bindplane
+```
+```
+# Check the current operational status of the BindPlane service to verify it started successfully without errors
 sudo systemctl status bindplane
-bindplane get account               # confirm / copy the Secret Key
+```
+```
+# Retrieve and display the default BindPlane account credentials (username and password) generated during setup so you can log into the web interface
+bindplane get account
 ```
 
 **Host the offline collector artifact** so air-gapped collectors install without internet:
 
-```bash
+```
+# Create a hidden '.bindplane' directory in your home folder to store CLI configurations and cache
+mkdir -p ~/.bindplane
+```
+```
+# Extract the BindPlane CLI executable from your offline zip file directly into a system-wide directory so you can run the 'bindplane' command from anywhere
 sudo unzip ~/airgap/bindplane/bindplane-cli*.zip -d /usr/local/bin/
+```
+```
+# Create a new CLI profile named 'airgap' that tells the CLI how to connect to your BindPlane server (be sure to replace <CONSOLE_PASSWORD> with the password from the previous step)
 bindplane profile set airgap --remote-url http://192.168.98.130:3001 --username admin --password <CONSOLE_PASSWORD>
+```
+```
+# Set the newly created 'airgap' profile as your active profile for all future CLI commands
 bindplane profile use airgap
+```
+```
+# Verify that the CLI is correctly installed and can successfully communicate with the BindPlane server by checking the version
 bindplane version
+```
+```
+# Upload the offline OpenTelemetry collector artifacts to the BindPlane server, allowing you to deploy and upgrade agents on your network without internet access
 bindplane upload agent-upgrade ~/airgap/collector/observiq-otel-collector-v1.100.0-artifacts.tar.gz --version v1.100.0
 ```
 
@@ -354,16 +432,17 @@ bindplane upload agent-upgrade ~/airgap/collector/observiq-otel-collector-v1.100
 
 ---
 
-### Phase 3 — Google SecOps Onboarding
+### Phase 3 - Google SecOps Onboarding
 
 ☁️ **Google SecOps console:**
 
-1. **SIEM Settings → Collection Agents** → download the **Ingestion Authentication File** (service-account JSON). *Secret — never commit.*
+1. **SIEM Settings → Collection Agents** → download the **Ingestion Authentication File** (service-account JSON). 
 2. **SIEM Settings → Profile → Organization Details** → copy the **Customer ID** and note the **GCP Project Number**.
 3. Record the ingestion details used by the gateway:
 
 | Field | Value |
 |---|---|
+| Name | `google-secops-dest` |
 | Region | `asia-southeast1` |
 | Endpoint (gRPC) | `asia-southeast1-malachiteingestion-pa.googleapis.com` |
 | Customer ID | `<SECOPS_CUSTOMER_ID>` |
@@ -373,56 +452,74 @@ bindplane upload agent-upgrade ~/airgap/collector/observiq-otel-collector-v1.100
 
 ---
 
-### Phase 4 — Gateway Collector (Offline CentOS)
+### Phase 4 - Gateway Collector (Offline CentOS)
 
 🔵 **offline-CentOS-server:**
 
-```bash
+```
+# Install or upgrade the observIQ OpenTelemetry Collector using the RPM package from your offline bundle
 sudo rpm -U ~/airgap/collector/observiq-otel-collector_v1.100.0_linux_amd64.rpm
-sudo vi /opt/observiq-otel-collector/manager.yaml
+```
+```
+# Open the collector's manager configuration file in the vim text editor so you can point it to your BindPlane OP server
+sudo vim /opt/observiq-otel-collector/manager.yaml
 ```
 
 ```yaml
 endpoint: ws://192.168.98.130:3001/v1/opamp
 secret_key: <OPAMP_SECRET_KEY>
 ```
-
-```bash
+```
+# Enable the OpenTelemetry collector service to start automatically on system boot, and start it immediately
 sudo systemctl enable --now observiq-otel-collector
+```
+```
+# Check the current operational status of the collector service to ensure it is running smoothly and communicating properly
 sudo systemctl status observiq-otel-collector
 ```
 
-🌐 **Bindplane console** — confirm the gateway shows **Connected**, then build the gateway pipeline:
+🌐 **Bindplane console** - confirm the gateway shows **Connected**, then build the gateway pipeline:
 
-- **Configuration:** `Gateway-Pipeline`, Platform = **Linux**.
-- **Source → Bindplane Gateway** (defaults — listens on `4317`/`4318`).
-- **Processors → Batch**, then **Google SecOps Standardization** with `logType = WINEVTLOG`.
-- **Destination → Google SecOps:** Protocol `gRPC`; Endpoint `asia-southeast1-malachiteingestion-pa.googleapis.com`; Auth `json` (paste the credentials JSON); Customer ID `<SECOPS_CUSTOMER_ID>`; Fallback Log Type `WINEVTLOG`; enable **Retry on Failure**.
-- **Apply → select the gateway collector → Start Rollout.**
+- **Create Configuration:** Give it a name `Gateway-Pipeline`, Select Platform = **Linux** Click Next.
+- **Add Source → Select Bindplane Gateway** (defaults — listens on `4317`/`4318`) Click Save.
+- **Add Processors → Search and add Batch** Save it, then again Search and add **Google SecOps Standardization** with `logType = WINEVTLOG` Save it.
+- **Add Destination on right → Search and add Google SecOps:** Protocol `gRPC`; Endpoint `asia-southeast1-malachiteingestion-pa.googleapis.com`; Auth `json` (paste the credentials JSON); Customer ID `<SECOPS_CUSTOMER_ID>`; Fallback Log Type `WINEVTLOG`; enable **Retry on Failure** Click Save.
+- **Click Apply → select the gateway collector → Start Rollout.**
 
 ---
 
-### Phase 5 — Windows 10 Agent (Offline)
+### Phase 5 - Windows 10 Agent (Offline)
 
 ⬛ **offline-Windows-agent** (elevated PowerShell / CMD):
 
-```powershell
+```
+# Rename the Windows machine to 'WIN-AGENT01' and immediately restart the system to apply the new name
 Rename-Computer -NewName WIN-AGENT01 -Restart
-
-# Verify LAN reachability AND confirm no internet (air-gap proof)
-Test-NetConnection 192.168.98.130 -Port 3001   # success
-Test-NetConnection 192.168.98.130 -Port 4317   # success
-Test-NetConnection 8.8.8.8        -Port 443     # MUST fail
+```
+```
+# Test local network connectivity to the BindPlane server's UI/API port to ensure this agent can communicate with the management console (This should report success)
+Test-NetConnection 192.168.98.130 -Port 3001
+```
+```
+# Test local network connectivity to the BindPlane server's OpenTelemetry gRPC port where the agent will send its metric and log data (This should report success)
+Test-NetConnection 192.168.98.130 -Port 4317
+```
+```
+# Verify the air-gap isolation is actively working by confirming the machine cannot reach external public IP addresses (This MUST fail)
+Test-NetConnection 8.8.8.8 -Port 443
 ```
 
-Install the agent silently from the locally staged MSI, pointing it at the server's OpAMP endpoint:
+Assuming you have already transferred the observiq-otel-collector-v1.100.0.msi file to C:\offline\, install the agent silently from the locally staged MSI, pointing it at the server's OpAMP endpoint:
 
-```cmd
+```
+:: Install the observIQ OpenTelemetry Collector silently from the offline MSI file, configuring it to connect and authenticate with your BindPlane OP management server
 msiexec /i "C:\offline\observiq-otel-collector-v1.100.0.msi" /quiet ^
   ENABLEMANAGEMENT=1 ^
   OPAMPENDPOINT=ws://192.168.98.130:3001/v1/opamp ^
   OPAMPSECRETKEY=<OPAMP_SECRET_KEY>
-
+```
+```
+:: Query the Windows Service Control Manager to check the status of the newly installed collector service (you want to see STATE: 4 RUNNING)
 sc query observiq-otel-collector   :: expect STATE: 4 RUNNING
 ```
 
@@ -430,32 +527,37 @@ sc query observiq-otel-collector   :: expect STATE: 4 RUNNING
 
 ---
 
-### Phase 6 — Pipelines (Bindplane GUI)
+### Phase 6 - Pipelines (Bindplane GUI)
 
-🌐 **Bindplane console** — build the Windows agent pipeline:
+🌐 **Bindplane console** - build the Windows agent pipeline:
 
-- **Configuration:** `Windows-Server-Logs`, Platform = **Windows**.
-- **Source → Windows Events:** enable **System**, **Application**, **Security**. Under **Advanced**, turn **Raw Logs ON** — *mandatory; SecOps rejects WINEVTLOG without it.* (Optionally set **Start At → beginning** to backfill.)
-- **Destination → Bindplane Gateway (OTLP):** Hostname `192.168.98.130`, Port `4317`, Protocol `gRPC`, TLS **insecure/disabled** (internal LAN).
-- **Processor → Batch.**
+- **Create Configuration:** Give it a name `Windows-Server-Logs`, Select Platform = **Windows**.
+- **Add Source →Select Windows Events:** Under the Channels section enable **System**, **Application**, **Security**. Under **Advanced**, turn **Raw Logs ON** — *mandatory; SecOps rejects WINEVTLOG without it.* (Optionally set **Start At → beginning** to backfill.) Click Save.
+- **Add Destination → Select Bindplane Gateway (OTLP):** Endpoint/Hostname `192.168.98.130`, Port `4317`, Protocol `gRPC`, TLS **insecure/disabled** (internal LAN).
+- **Add Processor →Select Batch.** Click Save.
 - **Apply → select `WIN-AGENT01` → Start Rollout.**
 
 ---
 
-### Phase 7 — Verification & Testing
+### Phase 7 - Verification & Testing
 
-⬛ **offline-Windows-agent** — generate test events:
+⬛ **offline-Windows-agent** - generate test events:
 
-```cmd
+```
+:: Generate a synthetic "Error" event in the Windows SYSTEM log to verify the OpenTelemetry collector is successfully reading and forwarding System events to BindPlane
 eventcreate /T ERROR /ID 999 /L SYSTEM      /SO BindplaneTest /D "Air-gap WINEVTLOG test event"
+```
+```
+:: Generate a second synthetic "Error" event, this time in the APPLICATION log, to ensure application-level events are also being captured and routed correctly
 eventcreate /T ERROR /ID 999 /L APPLICATION /SO BindplaneTest /D "Air-gap WINEVTLOG test event"
 ```
 
-🌐 **Bindplane console** — confirm live throughput: `Windows Events → Bindplane Gateway` (agent pipeline) and `Bindplane Gateway → Google SecOps` (gateway pipeline).
+🌐 **Bindplane console** - confirm live throughput: `Windows Events → Bindplane Gateway` (agent pipeline) and `Bindplane Gateway → Google SecOps` (gateway pipeline).
 
-🔵 **offline-CentOS-server** — inspect the gateway export:
+🔵 **offline-CentOS-server** - inspect the gateway export:
 
 ```bash
+# Continuously monitor the OpenTelemetry collector's live log file in real-time to verify that telemetry data is being successfully authenticated and exported without 401 (Unauthorized) or 403 (Forbidden) errors
 sudo tail -f /opt/observiq-otel-collector/log/collector.log
 # success = chronicle exports with no 401/403
 ```
