@@ -86,14 +86,14 @@ This maps out the complete lifecycle of the telemetry, from the moment a securit
 
 | Layer | Component | Version |
 |---|---|---|
-| Hypervisor | VMware Workstation | — |
-| Server OS | CentOS Stream 9 | — |
-| Agent OS | Windows 10 Pro | — |
+| Hypervisor | VMware Workstation |  |
+| Server OS | CentOS Stream 9 |  |
+| Agent OS | Windows 10 Pro |  |
 | Pipeline mgmt | Bindplane (Google Edition) | v1.100.0 |
 | Collector | observIQ Distro for OpenTelemetry Collector (BDOT) | v1.100.0 |
 | Database | PostgreSQL (PGDG) | 15 |
 | SIEM | Google SecOps (Chronicle) | `asia-southeast1` |
-| Transport | OTLP (gRPC) over LAN; gRPC/HTTPS to SecOps | — |
+| Transport | OTLP (gRPC) over LAN; gRPC/HTTPS to SecOps |  |
 
 ---
 
