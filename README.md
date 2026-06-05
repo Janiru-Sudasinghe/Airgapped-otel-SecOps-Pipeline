@@ -626,10 +626,10 @@ Before any push, run a secret scanner (e.g., `gitleaks detect`) and confirm no r
 Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommended capture set:
 
 **On the Windows agent (⬛):**
-1. `Test-NetConnection` succeeding on `:3001`/`:4317` and **failing** on the internet (air-gap proof). [`Test-NetConnection/`](screenshots/Test-NetConnection.png)
-2. `sc query observiq-otel-collector` showing **RUNNING**.
-3. `collector.log` tail showing OTLP export to `192.168.98.130:4317`.
-4. Event Viewer showing the test events.
+1. [`Test-NetConnection`](screenshots/Test-NetConnection.png) succeeding on `:3001`/`:4317` and **failing** on the internet (air-gap proof). 
+2. [`sc query observiq-otel-collector`](screenshots/sc_query_observiq-otel-collector.png) showing **RUNNING**.
+3. [`collector_log`](screenshots/collector_log.png) tail showing OTLP export to `192.168.98.130:4317`.
+4. [`Event_Viewer`](screenshots/Event_Viewer.png) showing the test events.
 
 **In the Bindplane console (🌐):** 
 1. Agents page - both collectors **Connected**. 
