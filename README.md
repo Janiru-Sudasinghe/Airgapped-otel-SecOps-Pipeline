@@ -66,7 +66,7 @@ This maps out the complete lifecycle of the telemetry, from the moment a securit
 
 <p align="center">
   <br>
-  <img src="./docs/diagrams/architecture.png" width="600" alt="Network Topology Diagram">
+  <img src="./Docs/diagram.png" width="600" alt="Network Topology Diagram">
 </p>
 
 ---
