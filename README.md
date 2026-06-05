@@ -225,10 +225,17 @@ cd ~/airgap && find . -type f \( -name '*.rpm' -o -name '*.tar.gz' -o -name '*.z
 
 🪟 **staging-Windows** — download the agent MSI:
 
-```powershell
+```
+# Force PowerShell to use TLS 1.2 for secure web connections, preventing connection errors with modern web servers
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+```
+```
+# Download the observIQ OpenTelemetry Collector installer (v1.100.0) and save it locally as an MSI file
 Invoke-WebRequest -Uri "https://bdot.bindplane.com/v1.100.0/observiq-otel-collector.msi" -OutFile "observiq-otel-collector-v1.100.0.msi"
-(Get-FileHash .\observiq-otel-collector-v1.100.0.msi -Algorithm SHA256).Hash | Out-File .\observiq-v1.100.0-SHA256.txt
+```
+```
+# Calculate the SHA256 cryptographic hash of the downloaded MSI and save that value into a text file for integrity verification
+(Get-FileHash .\observiq-otel-collector-v1.100.0.msi -Algorithm SHA256).Hash | Out-File -FilePath .\observiq-v1.100.0-SHA256.txt
 ```
 
 **Transfer** `~/airgap/` to the CentOS server and the MSI to `C:\offline\` on the Windows agent via offline media, then re-verify checksums on both targets.
