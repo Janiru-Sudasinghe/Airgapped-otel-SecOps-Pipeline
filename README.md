@@ -632,12 +632,12 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 4. [`Event_Viewer`](screenshots/Event_Viewer.png) showing the test events.
 
 **In the Bindplane console (🌐):** 
-1. Agents page - both collectors **Connected**. 
-2. Windows pipeline - `Windows Events → Bindplane Gateway` with live throughput. 
-3. Gateway pipeline - `Bindplane Gateway → Google SecOps` with throughput.
+1. [`Agents_page`](screenshots/Agents_page.png) - both collectors **Connected**. 
+2. [`Windows_pipeline`](screenshots/Windows_pipeline.png) - `Windows Events → Bindplane Gateway` with live throughput. 
+3. [`Gateway_pipeline`](screenshots/Gateway_pipeline.png) - `Bindplane Gateway → Google SecOps` with throughput.
 
 **In Google SecOps (☁️):** 
-1. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events
+1. [`UDM_Search`](screenshots/UDM_Search.png) `metadata.log_type = "WINEVTLOG"` returning the test events
    
 ---
 
