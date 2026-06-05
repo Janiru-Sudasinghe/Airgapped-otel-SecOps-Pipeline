@@ -634,13 +634,11 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 **In the Bindplane console (🌐):** 
 1. Agents page - both collectors **Connected**. 
 2. Windows pipeline - `Windows Events → Bindplane Gateway` with live throughput. 
-3. Gateway pipeline - `Bindplane Gateway → Google SecOps` with throughput. 
-4. Google SecOps destination panel (Customer ID/credentials **blurred**).
+3. Gateway pipeline - `Bindplane Gateway → Google SecOps` with throughput.
 
 **In Google SecOps (☁️):** 
 1. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events
-2. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.<br>
-
+   
 ---
 
 ## 📂 Repository Structure
