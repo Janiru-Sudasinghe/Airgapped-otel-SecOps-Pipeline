@@ -626,7 +626,7 @@ Before any push, run a secret scanner (e.g., `gitleaks detect`) and confirm no r
 Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommended capture set:
 
 **On the Windows agent (⬛):**
-1. `Test-NetConnection` succeeding on `:3001`/`:4317` and **failing** on the internet (air-gap proof).
+1. `Test-NetConnection` succeeding on `:3001`/`:4317` and **failing** on the internet (air-gap proof). [`Test-NetConnection/`](screenshots/Test-NetConnection.png)
 2. `sc query observiq-otel-collector` showing **RUNNING**.
 3. `collector.log` tail showing OTLP export to `192.168.98.130:4317`.
 4. Event Viewer showing the test events.
