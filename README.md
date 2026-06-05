@@ -650,24 +650,7 @@ service:
 
 > **None of the following may ever be committed:** the Google service-account / Ingestion Authentication File JSON, the Bindplane **license key**, the **OPAMP secret key**, the **Customer ID**, the **GCP project number**, and any **passwords**. If any of these were ever exposed, **revoke and rotate them immediately** (delete the service-account key in Google Cloud Console → IAM → Service Accounts → Keys, and regenerate).
 
-Every committed file uses placeholders (`<DB_PASSWORD>`, `<OPAMP_SECRET_KEY>`, `<SECOPS_CUSTOMER_ID>`, `<GCP_PROJECT_NUMBER>`, `<BINDPLANE_LICENSE_KEY>`, `<REDACTED_INGESTION_AUTH_JSON>`). Recommended [`.gitignore`](.gitignore):
-
-```gitignore
-# Credentials / secrets — never commit
-*ingestion*auth*.json
-*service*account*.json
-**/creds*.json
-*.key
-*.pem
-.env
-# Only *.example configs are tracked
-configs/**/config.yaml
-configs/**/manager.yaml
-configs/**/*.secret
-# Screenshots may contain Customer ID / tokens — opt-in only
-screenshots/*
-!screenshots/.gitkeep
-```
+Every committed file uses placeholders (`<DB_PASSWORD>`, `<OPAMP_SECRET_KEY>`, `<SECOPS_CUSTOMER_ID>`, `<GCP_PROJECT_NUMBER>`, `<BINDPLANE_LICENSE_KEY>`, `<REDACTED_INGESTION_AUTH_JSON>`). 
 
 Before any push, run a secret scanner (e.g., `gitleaks detect`) and confirm no real keys remain.
 
