@@ -166,33 +166,61 @@ Airgapped-otel-SecOps-Pipeline/
 > 🌐 `Bindplane console` <br>
 > ☁️ `Google SecOps console`.
 
-### Phase 1 — Stage Binaries (Internet-Connected Hosts)
+### Phase 1 - Stage Binaries (Internet-Connected Hosts)
 
-🟢 **staging-CentOS** — download all Linux artifacts and resolve PostgreSQL dependencies:
+🟢 **staging-CentOS** - download all Linux artifacts and resolve PostgreSQL dependencies:
 
-```bash
-mkdir -p ~/airgap/{bindplane,postgres,collector,artifacts} && cd ~/airgap
-
-# Bindplane server + CLI (Google Edition)
+```
+# Create nested folders and move into the root airgap directory
+mkdir -p ~/airgap/{bindplane,postgres,collector,artifacts} && cd ~/airgap  
+```
+```
+# Download BindPlane Enterprise RPM directly into the bindplane folder
 wget "https://downloads.bindplane.com/bindplane/1.100.0/bindplane-ee_linux_amd64.rpm" \
-  -O ~/airgap/bindplane/bindplane-ee_v1.100.0_linux_amd64.rpm
+  -O ~/airgap/bindplane/bindplane-ee_v1.100.0_linux_amd64.rpm  
+```
+```
+ # Download the BindPlane CLI zip into the bindplane folder
 wget "https://storage.googleapis.com/bindplane-op-releases/bindplane/1.100.0/bindplane-ee-linux-amd64.zip" \
   -O ~/airgap/bindplane/bindplane-cli-v1.100.0.zip
-
-# OpenTelemetry collector (gateway) + offline upgrade artifacts
-wget "https://github.com/observIQ/bindplane-otel-collector/releases/download/v1.100.0/observiq-otel-collector_v1.100.0_linux_amd64.rpm" -P ~/airgap/collector/
-wget "https://github.com/observIQ/bindplane-otel-collector/releases/download/v1.100.0/observiq-otel-collector-v1.100.0-artifacts.tar.gz" -P ~/airgap/collector/
-
-# PostgreSQL 15 (PGDG) with full dependency tree
-cd ~/airgap/postgres
+```
+```
+# Download the BindPlane CLI zip into the bindplane folder
+wget "https://github.com/observIQ/bindplane-otel-collector/releases/download/v1.100.0/observiq-otel-collector_v1.100.0_linux_amd64.rpm" \
+  -P ~/airgap/collector/  # Download the OpenTelemetry collector RPM into the collector folder
+```
+```
+# Download the OpenTelemetry offline artifacts into the collector folder
+wget "https://github.com/observIQ/bindplane-otel-collector/releases/download/v1.100.0/observiq-otel-collector-v1.100.0-artifacts.tar.gz" \
+  -P ~/airgap/collector/
+```
+```
+# Move into the postgres directory to isolate the database files
+cd postgres/
+```
+```
+# Install the Postgres repo locally so dnf can locate the packages
 sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-sudo dnf -qy module disable postgresql        # MANDATORY on RHEL 9
+```
+```
+# Disable the default OS Postgres module to prevent version conflicts
+sudo dnf module disable -y postgresql
+```
+```
+# Install necessary tools (dnf-plugins-core provides the 'dnf download' command)
 sudo dnf install -y dnf-plugins-core wget
+```
+```
+# Save the repo setup file itself for the target offline machine
 wget -P ~/airgap/postgres/ https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-dnf download --resolve --alldeps --destdir=. postgresql15-server postgresql15 postgresql15-libs postgresql15-contrib
-
-# Checksums for integrity verification after transfer
-cd ~/airgap && find . -type f \( -name '*.rpm' -o -name '*.tar.gz' -o -name '*.zip' \) -exec sha256sum {} \; > SHA256SUMS.txt
+```
+```
+# Fetch Postgres 15 and resolve ALL dependencies for offline use
+dnf download --resolve --alldeps --destdir=postgres postgresql15-server postgresql15 postgresql15-libs postgresql15-contrib
+```
+```
+# Return to root, hash all downloaded files, and output to a text file for integrity verification
+cd ~/airgap && find . -type f \( -name '*.rpm' -o -name '*.tar.gz' -o -name '*.zip' \) -exec sha256sum {} \; > SHA256SUMS.txt 
 ```
 
 🪟 **staging-Windows** — download the agent MSI:
