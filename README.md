@@ -19,10 +19,9 @@
 2. [Architecture](#-architecture)
 3. [Key Features](#-key-features)
 4. [Technology Stack](#-technology-stack)
-5. [Repository Structure](#-repository-structure)
-6. [Prerequisites](#-prerequisites)
-7. [Network & Port Plan](#-network--port-plan)
-8. [Implementation Guide](#-implementation-guide)
+5. [Prerequisites](#-prerequisites)
+6. . [Network & Port Plan](#-network--port-plan)
+7. . [Implementation Guide](#-implementation-guide)
    - [Phase 1 — Stage Binaries (Internet-Connected Hosts)](#phase-1--stage-binaries-internet-connected-hosts)
    - [Phase 2 — CentOS Bindplane Server (Offline)](#phase-2--centos-bindplane-server-offline)
    - [Phase 3 — Google SecOps Onboarding](#phase-3--google-secops-onboarding)
@@ -30,10 +29,11 @@
    - [Phase 5 — Windows 10 Agent (Offline)](#phase-5--windows-10-agent-offline)
    - [Phase 6 — Pipelines (Bindplane GUI)](#phase-6--pipelines-bindplane-gui)
    - [Phase 7 — Verification & Testing](#phase-7--verification--testing)
-9. [Configuration Reference](#-configuration-reference)
-10. [Troubleshooting](#-troubleshooting)
-11. [Security & Secret Handling](#-security--secret-handling)
-12. [Screenshots](#-screenshots)
+8. [Configuration Reference](#-configuration-reference)
+9. [Troubleshooting](#-troubleshooting)
+10. [Security & Secret Handling](#-security--secret-handling)
+11. [Screenshots](#-screenshots)
+12. [Repository Structure](#-repository-structure)
 13. [Lessons Learned](#-lessons-learned)
 14. [References](#-references)
 15. [Author & License](#-author--license)
@@ -652,7 +652,8 @@ Airgapped-otel-SecOps-Pipeline/
 ├── README.md                              # This file
 ├── docs/
 │   └── diagram.png
-└── screenshots/                           # Evidence (see Screenshots section)
+└── screenshots/
+    └── ...                        # Evidence (see Screenshots section)
 ```
 
 ---
