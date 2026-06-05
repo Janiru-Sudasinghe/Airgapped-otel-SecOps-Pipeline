@@ -641,8 +641,6 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 1. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events
 2. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.<br>
 
-> ⚠️ Blur the **Customer ID**, **project number**, and any tokens before committing screenshots.
-
 ---
 
 ## 📂 Repository Structure
