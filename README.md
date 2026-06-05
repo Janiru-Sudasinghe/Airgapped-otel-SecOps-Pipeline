@@ -631,15 +631,15 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 3. `collector.log` tail showing OTLP export to `192.168.98.130:4317`.
 4. Event Viewer showing the test events.
 
-**In the Bindplane console (🌐):**
-5. Agents page — both collectors **Connected**.
-6. Windows pipeline — `Windows Events → Bindplane Gateway` with live throughput.
-7. Gateway pipeline — `Bindplane Gateway → Google SecOps` with throughput.
+**In the Bindplane console (🌐):** <br>
+5. Agents page - both collectors **Connected**. <br>
+6. Windows pipeline - `Windows Events → Bindplane Gateway` with live throughput. <br>
+7. Gateway pipeline - `Bindplane Gateway → Google SecOps` with throughput. <br>
 8. Google SecOps destination panel (Customer ID/credentials **blurred**).
 
-**In Google SecOps (☁️):**
-9. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events.
-10. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.
+**In Google SecOps (☁️):** <br>
+9. UDM Search `metadata.log_type = "WINEVTLOG"` returning the test events.<br>
+10. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.<br>
 
 > ⚠️ Blur the **Customer ID**, **project number**, and any tokens before committing screenshots.
 
