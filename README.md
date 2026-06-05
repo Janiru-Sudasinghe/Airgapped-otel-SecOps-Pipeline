@@ -701,9 +701,9 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 
 ## 👤 Author & License
 
-**Author:** Janiru Sudasinghe — Cyber Security Intern
-**Project:** Air-gapped Windows Event Log forwarding to Google SecOps via self-hosted Bindplane
+**Author:** Janiru Sudasinghe - Cyber Security Intern <br>
+**Project:** Air-gapped Windows Event Log forwarding to Google SecOps via self-hosted Bindplane <br><br>
 
-Released under the **MIT License** — see [`LICENSE`](LICENSE).
+Released under the **MIT License** 
 
 > *Disclaimer: This repository documents a lab implementation. All credentials, keys, and identifiers shown are placeholders. Adapt IPs, regions, and versions to your environment.*
