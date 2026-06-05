@@ -97,41 +97,6 @@ This maps out the complete lifecycle of the telemetry, from the moment a securit
 
 ---
 
-## 📂 Repository Structure
-
-```
-Airgapped-otel-SecOps-Pipeline/
-├── README.md                              # This file
-├── LICENSE
-├── docs/
-│   ├── 01-staging-downloads.md
-│   ├── 02-centos-server-setup.md
-│   ├── 03-secops-onboarding.md
-│   ├── 04-gateway-collector.md
-│   ├── 05-windows-agent.md
-│   ├── 06-verification-troubleshooting.md
-│   └── diagrams/
-│       └── architecture.png               # High-res architecture diagram
-├── configs/
-│   ├── bindplane-server/
-│   │   └── config.yaml.example            # REDACTED server config (offline: true)
-│   ├── gateway/
-│   │   ├── manager.yaml.example           # REDACTED (OpAMP endpoint + secret_key)
-│   │   └── gateway-config.yaml.example    # GUI-generated reference (REDACTED)
-│   └── windows-agent/
-│       └── windows-agent-config.yaml.example  # GUI-generated reference (REDACTED)
-├── scripts/
-│   ├── 01-stage-downloads-centos.sh       # Pulls RPMs + deps + artifacts, checksums
-│   ├── 02-postgres-offline-install.sh
-│   ├── 03-firewalld-open-ports.sh
-│   └── verify-windows-reachability.ps1
-├── screenshots/                           # Evidence (see Screenshots section)
-│   └── .gitkeep
-└── SHA256SUMS.txt                         # Checksums of staged binaries (safe to commit)
-```
-
----
-
 ## ✅ Prerequisites
 
 - **2 offline VMs:** CentOS Stream 9 (Bindplane server + gateway) and Windows 10 Pro (agent), on the same isolated LAN segment.
@@ -677,6 +642,18 @@ Place evidence in [`screenshots/`](screenshots/) and reference it here. Recommen
 10. Health Hub showing WINEVTLOG **Last Ingested / Last Normalized** recent + Healthy.
 
 > ⚠️ Blur the **Customer ID**, **project number**, and any tokens before committing screenshots.
+
+---
+
+## 📂 Repository Structure
+
+```
+Airgapped-otel-SecOps-Pipeline/
+├── README.md                              # This file
+├── docs/
+│   └── diagram.png
+└── screenshots/                           # Evidence (see Screenshots section)
+```
 
 ---
 
