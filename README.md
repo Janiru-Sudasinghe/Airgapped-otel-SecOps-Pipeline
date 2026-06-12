@@ -675,8 +675,10 @@ Airgapped-otel-SecOps-Pipeline/
 
 ## 👤 Author & License
 
-**Author:** Janiru Sudasinghe - Cyber Security Intern <br>
-**Project:** Air-gapped Windows Event Log forwarding to Google SecOps via self-hosted Bindplane <br><br>
+**Janiru Sudasinghe**
+
+- GitHub: [@Janiru-Sudasinghe](https://github.com/Janiru-Sudasinghe)
+- LinkedIn: [Janiru Sudasinghe](https://www.linkedin.com/in/janiru-sudasinghe/?skipRedirect=true)
 
 Released under the **MIT License** 
 
